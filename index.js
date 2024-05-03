@@ -1,17 +1,25 @@
-/*
-This helper function makes a group of elements animate along the x-axis in a seamless, responsive loop.
-
-Features:
-- Uses xPercent so that even if the widths change (like if the window gets resized), it should still work in most cases.
-- When each item animates to the left or right enough, it will loop back to the other side
-- Optionally pass in a config object with values like "speed" (default: 1, which travels at roughly 100 pixels per second), paused (boolean),  repeat, reversed, and paddingRight.
-- The returned timeline will have the following methods added to it:
-- next() - animates to the next element using a timeline.tweenTo() which it returns. You can pass in a vars object to control duration, easing, etc.
-- previous() - animates to the previous element using a timeline.tweenTo() which it returns. You can pass in a vars object to control duration, easing, etc.
-- toIndex() - pass in a zero-based index value of the element that it should animate to, and optionally pass in a vars object to control duration, easing, etc. Always goes in the shortest direction
-- current() - returns the current index (if an animation is in-progress, it reflects the final index)
-- times - an Array of the times on the timeline where each element hits the "starting" spot. There's also a label added accordingly, so "label1" is when the 2nd element reaches the start.
-*/
+/**
+ * Creates a horizontal looping animation for a set of elements along the x-axis.
+ * This function configures a GSAP timeline for the animation which loops seamlessly
+ * and is responsive to size changes like window resizing.
+ *
+ * @param {Array|NodeList|string} items - The elements to be animated. Can be a selector string, an array, or a NodeList.
+ * @param {Object} [config={}] - Configuration object with optional properties:
+ *  - speed {number} [1] - Speed at which elements travel, approximately 100 pixels per second by default.
+ *  - paused {boolean} [false] - Whether the timeline starts in a paused state.
+ *  - repeat {number} [0] - Number of times the timeline should repeat.
+ *  - reversed {boolean} [false] - Whether the timeline should start in reversed state.
+ *  - paddingRight {number} [0] - Right padding to add to the total width calculation.
+ *
+ * @returns {GSAPTimeline} - The GSAP timeline instance for controlling the animation.
+ *
+ * Features added to the timeline:
+ *  - next() - Advances the animation to the next element.
+ *  - previous() - Rewinds the animation to the previous element.
+ *  - toIndex(index, vars) - Jumps the animation to the specified index.
+ *  - current() - Returns the current index of the animation.
+ *  - times - Array of times each element hits the "starting" spot.
+ */
 function horizontalLoop(items, config) {
   items = gsap.utils.toArray(items);
   config = config || {};
@@ -114,19 +122,21 @@ function horizontalLoop(items, config) {
   return tl;
 }
 
-/*
-Copy this to your project. Pass in the elements (selector text or NodeList or Array), then a
-function/callback that actually performs your DOM changes, and optionally a vars
-object that contains any of the following properties to customize the transition:
-
-- duration [Number] - duration (in seconds) of each animation
-- stagger [Number | Object | Function] - amount to stagger the starting time of each animation. You may use advanced staggers too (see https://codepen.io/GreenSock/pen/jdawKx)
-- ease [Ease] - controls the easing of the animation. Like "power2.inOut", or "elastic", etc.
-- onComplete [Function] - a callback function that should be called when all the animation has completed.
-- delay [Number] - time (in seconds) that should elapse before any of the animations begin.
-
-This function will return a Timeline containing all the animations.
-*/
+/**
+ * Creates a flip animation using GSAP's FLIP plugin, where elements smoothly transition
+ * from their initial to final state with minimal effort.
+ *
+ * @param {Array|NodeList|string} elements - The elements to animate. Can be a selector string, an array, or a NodeList.
+ * @param {Function} changeFunc - Function that performs the DOM changes to which the animation adapts.
+ * @param {Object} [vars={}] - Additional variables for customizing the animation. Possible properties include:
+ *  - duration {number} - Duration of each animation in seconds.
+ *  - stagger {number|Object|Function} - Stagger start times of animations.
+ *  - ease {Ease} - Easing function to control animation pacing.
+ *  - onComplete {Function} - Callback function when all animations complete.
+ *  - delay {number} - Delay before the animation starts in seconds.
+ *
+ * @returns {GSAPTimeline} - The GSAP timeline that controls the sequence of animations.
+ */
 function simpleFlip(elements, changeFunc, vars) {
   elements = gsap.utils.toArray(elements);
   vars = vars || {};
@@ -143,13 +153,13 @@ function simpleFlip(elements, changeFunc, vars) {
   });
   changeFunc();
   for (p in vars) {
-    p !== "onComplete" && p !== "delay" && (copy[p] = vars[p]);
+    p !== 'onComplete' && p !== 'delay' && (copy[p] = vars[p]);
   }
   copy.x = (i, element) =>
-    "+=" + (bounds[i].left - element.getBoundingClientRect().left);
+    '+=' + (bounds[i].left - element.getBoundingClientRect().left);
   copy.y = (i, element) =>
-    "+=" + (bounds[i].top - element.getBoundingClientRect().top);
+    '+=' + (bounds[i].top - element.getBoundingClientRect().top);
   return tl.from(elements, copy);
 }
 
-module.exports = {horizontalLoop, simpleFlip}
+module.exports = { horizontalLoop, simpleFlip };

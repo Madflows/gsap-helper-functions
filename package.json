@@ -14,5 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "gsap": "./gsap.tgz"
-  }
+  },
+  "repository": "https://github.com/Madflows/gsap-helper-functions",
+  "homepage": "https://gsap.com/docs/v3/HelperFunctions/"
 }
